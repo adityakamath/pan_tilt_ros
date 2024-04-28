@@ -1,0 +1,16 @@
+pan_tilt:
+  ros__parameters:
+    joint_names:
+      - joint_pan
+      - joint_tilt
+    joint_ids: [12, 13]
+    joy_axes: [0, 1]
+    stop_button: 4
+    mid_pos: [2048, 2048]
+    min_pos: [1536, 1536]
+    max_pos: [2560, 2560]
+    drive_mode: 0
+    speed: 4500
+    acceleration: 255
+    usb_port: /dev/ttyACM0
+    baud_rate: 1000000

@@ -1,0 +1,3 @@
+[submodule "include/SCServo_Linux"]
+	path = include/SCServo_Linux
+	url = https://github.com/adityakamath/SCServo_Linux
