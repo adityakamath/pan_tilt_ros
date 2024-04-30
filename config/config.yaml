@@ -7,8 +7,8 @@ pan_tilt:
     joy_axes: [0, 1] # left joy horizontal, vertical
     stop_button: 4 # L1
     mid_pos: [2048, 2048]
-    min_pos: [1536, 1568]
-    max_pos: [2560, 2560]
+    min_pos: [1024, 1600]
+    max_pos: [3072, 3072]
     drive_mode: 0
     speed: 4500 # steps / second
     acceleration: 255 # 0 - 255
