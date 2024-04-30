@@ -22,7 +22,7 @@ public:
         vector<long int> joint_ids  = this->declare_parameter<vector<long int>>("joint_ids", {12, 13});
         vector<long int> joy_axes   = this->declare_parameter<vector<long int>>("joy_axes", {0, 1});
         vector<long int> mid_step   = this->declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
-        vector<long int> min_step   = this->declare_parameter<vector<long int>>("min_pos", {1280, 1500});
+        vector<long int> min_step   = this->declare_parameter<vector<long int>>("min_pos", {1280, 1600});
         vector<long int> max_step   = this->declare_parameter<vector<long int>>("max_pos", {2816, 2560});
         int drive_mode              = this->declare_parameter<int>("drive_mode", 0); // 0 = servo, 1 = closed loop wheel, 2 = open loop wheel
         string usb_port             = this->declare_parameter<string>("usb_port", "/dev/ttyACM0");
