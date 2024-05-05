@@ -1,4 +1,4 @@
-pan_tilt:
+pan_tilt_node:
   ros__parameters:
     joint_names:
       - joint_pan
@@ -12,5 +12,5 @@ pan_tilt:
     drive_mode: 0
     speed: 4500 # steps / second
     acceleration: 255 # 0 - 255
-    usb_port: /dev/ttyACM0
+    usb_port: /dev/ttyACM1
     baud_rate: 1000000

@@ -15,7 +15,7 @@ public:
     PanTiltNode() : Node("omni_control_node")
     {
         joint_names_  = this->declare_parameter<vector<string>>("joint_names", {"joint_pan", "joint_tilt"}); 
-        speed_        = this->declare_parameter<double>("speed", 4500); // steps per second
+        speed_        = this->declare_parameter<int>("speed", 4500); // steps per second
         acceleration_ = this->declare_parameter<int>("acceleration", 255); // 0 - 255
         stop_button_  = this->declare_parameter<int>("stop_button", 4); // defaults to SixAxis/SteamDeck:L1
 
@@ -91,7 +91,7 @@ private:
     sensor_msgs::msg::Joy::SharedPtr joy_msg_;
 
     vector<string> joint_names_;
-    double speed_;
+    int speed_;
     int acceleration_;
     int stop_button_;
     bool stop_;
