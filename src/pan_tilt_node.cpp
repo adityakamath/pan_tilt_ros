@@ -19,6 +19,7 @@ public:
         acceleration_ = this->declare_parameter<int>("acceleration", 255); // 0 - 255
         stop_button_  = this->declare_parameter<int>("stop_button", 4); // defaults to SixAxis/SteamDeck:L1
 
+        string           joy_topic  = this->declare_parameter<string>("joy_topic", "/joy");
         vector<long int> joint_ids  = this->declare_parameter<vector<long int>>("joint_ids", {12, 13});
         vector<long int> joy_axes   = this->declare_parameter<vector<long int>>("joy_axes", {0, 1});
         vector<long int> mid_step   = this->declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
@@ -62,7 +63,7 @@ public:
             st3215_.RegWriteAction();
         }
 
-        joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>("/joy", 10, bind(&PanTiltNode::JoyCallback, this, placeholders::_1));
+        joy_subscriber_ = this->create_subscription<sensor_msgs::msg::Joy>(joy_topic, 10, bind(&PanTiltNode::JoyCallback, this, placeholders::_1));
         joint_state_publisher_ = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 10);
         diagnostics_publisher_ = this->create_publisher<diagnostic_msgs::msg::DiagnosticArray>("/diagnostics", 10);
         timer_ = this->create_wall_timer(chrono::milliseconds(20), bind(&PanTiltNode::TimerCallback, this));
