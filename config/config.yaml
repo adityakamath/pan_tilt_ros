@@ -4,7 +4,6 @@ pan_tilt_node:
       - joint_pan
       - joint_tilt
     joint_ids: [12, 13]
-    joy_topic: /joy
     joy_axes: [0, 1] # left joy horizontal, vertical
     stop_button: 4 # L1
     mid_pos: [2048, 2048]
