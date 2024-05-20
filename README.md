@@ -5,7 +5,7 @@ The mechanism currently holds a [Luxonis OAK-D](https://shop.luxonis.com/product
 
 ## Implementation details
 
-* ```pan_tilt```: This executable is generated using the ```pan_tilt_node.cpp``` source file and subscribes to [Joy messages]((https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Joy.html)) - more specifically two axes for pan and tilt and one button for an emergency stop - to control the pan-tilt mechanism. When the emergency stop button is pressed, the torque is disabled on both motors, allowing the user to move the motors by hand. When the button is pressed again, the motors return to the position specified by the pan and tilt axes - in this case a joystick on the game controller. This node uses the [SCServo_Linux library](https://github.com/adityakamath/SCServo_Linux) to drive the motors in the closed-loop servo mode. Additionally, this node also publishes [JointState](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) and [DiagnosticArray](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) messages (PWM, motion - true/false, temperature, voltage and current) for each motor.
+* ```pan_tilt```: This executable is generated using the ```pan_tilt_node.cpp``` source file and subscribes to [Joy messages]((https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Joy.html)) - more specifically two axes for pan and tilt and one button for an emergency stop - to control the pan-tilt mechanism. When the emergency stop button is pressed, the torque is disabled on both motors, allowing the user to move the motors by hand. When the button is pressed again, the motors return to the position specified by the pan and tilt axes - which can be defined in the configuration file. In this case, the pan motion uses the L2 and R2 axes for left and right motion, and the tilt motion uses the Up and Down D-Pad buttons, which is represented as an axis going from +1 to -1 in the joystick mapping. The configuration allows up to 2 axes per joint, which are then mixed in the source code. This node uses the [SCServo_Linux library](https://github.com/adityakamath/SCServo_Linux) to drive the motors in the closed-loop servo mode. Additionally, this node also publishes [JointState](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) and [DiagnosticArray](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) messages (PWM, motion - true/false, temperature, voltage and current) for each motor.
 * ```pan_tilt_launch.py```: This is the launch file that launches ```pan_tilt``` and loads its parameters using the ```config/config.yaml``` file.
 
 ## Parameters
@@ -13,12 +13,13 @@ The following parameters and their default values are defined in the ```pan_tilt
 
 * ```joint_names```: Joint names for the pan and tilt joints (Default: ```[joint_pan, joint_tilt]```)
 * ```joint_ids```: Motor IDs for each joint (Default: ```[1, 2]```)
-* ```joy_axes```: Joystick axes mapping for the pan and tilt control (Default: ```[0, 1]```)
+* ```joint_inv```: Invert joint direction (Default: ```[false, false]```)
+* ```joy_axes0```: Joystick axes mapping for index 0 of ```joint_names``` (Default: ```[2, 5]```)
+* ```joy_axes1```: Joystick axes mapping for index 1 of ```joint_names``` (Default: ```[7]```)
 * ```stop_button```: Button mapping for the emergency stop functionality (Default: ```4```)
 * ```mid_pos```: Middle (origin) step values for the pan and tilt motors (Default: ```[2048, 2048]```)
 * ```min_pos```: Lower limit step values for the pan and tilt motors (Default: ```[1600, 1600]```)
 * ```max_pos```: Upper limit step values for the pan and tilt motors (Default: ```[2816, 2816]```)
-* ```drive_mode```: Drive mode for the motors. 0 = closed loop servo mode, 1 = closed loop wheel mode, 2 = open loop wheel mode, 3 = stepper mode. This application currently only supports mode 0 (Default: ```0```)
 * ```speed```: Speed of the motors in steps per second ranging from -4500 to 4500 (```Default: 4500```)
 * ```acceleration```: Acceleration of the motors ranging from 0 to 255 (Default: ```255```)
 * ```usb_port```: USB port name (Default: ```/dev/ttyACM0```)

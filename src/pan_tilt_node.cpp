@@ -19,14 +19,18 @@ public:
         acceleration_ = this->declare_parameter<int>("acceleration", 255); // 0 - 255
         stop_button_  = this->declare_parameter<int>("stop_button", 4); // defaults to SixAxis/SteamDeck:L1
 
-        vector<long int> joint_ids  = this->declare_parameter<vector<long int>>("joint_ids", {1, 2});
-        vector<long int> joy_axes   = this->declare_parameter<vector<long int>>("joy_axes", {0, 1});
-        vector<long int> mid_step   = this->declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
-        vector<long int> min_step   = this->declare_parameter<vector<long int>>("min_pos", {1600, 1600});
-        vector<long int> max_step   = this->declare_parameter<vector<long int>>("max_pos", {2816, 2816});
-        int drive_mode              = this->declare_parameter<int>("drive_mode", 0); // 0 = servo, 1 = closed loop wheel, 2 = open loop wheel
-        string usb_port             = this->declare_parameter<string>("usb_port", "/dev/ttyACM0");
-        int baud_rate               = this->declare_parameter<int>("baud_rate", 1000000); //115200 for sms, 1000000 for sts
+        vector<long int> joint_ids = this->declare_parameter<vector<long int>>("joint_ids", {1, 1});
+        vector<long int> mid_step  = this->declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
+        vector<long int> min_step  = this->declare_parameter<vector<long int>>("min_pos", {1600, 1600});
+        vector<long int> max_step  = this->declare_parameter<vector<long int>>("max_pos", {2816, 2816});
+        vector<bool> joint_inv     = this->declare_parameter<vector<bool>>("joint_inv", {false, false});
+        
+        vector<long int> joy_axes0 = this->declare_parameter<vector<long int>>("joy_axes0", {2, 5});
+        vector<long int> joy_axes1 = this->declare_parameter<vector<long int>>("joy_axes1", {4});
+        vector<vector<long int>> joy_axes = {joy_axes0, joy_axes1};
+        
+        string usb_port = this->declare_parameter<string>("usb_port", "/dev/ttyACM0");
+        int baud_rate   = this->declare_parameter<int>("baud_rate", 1000000); //115200 for sms, 1000000 for sts
 
         if (joint_names_.size() != 2 || joint_ids.size() != 2 || min_step.size() != 2 || max_step.size() != 2 || mid_step.size() != 2)
         {
@@ -43,22 +47,15 @@ public:
 
         for (size_t i = 0; i < joint_names_.size(); ++i)
         {
-            joint_id_map_[joint_names_[i]] = joint_ids[i];
+            joint_id_map_[joint_names_[i]]   = joint_ids[i];
             joint_step_map_[joint_names_[i]] = {mid_step[i], min_step[i], max_step[i]};
             joint_axis_map_[joint_names_[i]] = joy_axes[i];
+            joint_inv_map_[joint_names_[i]] = joint_inv[i];
 
             uint8_t u8_id = static_cast<uint8_t>(joint_id_map_[joint_names_[i]]);
-            st3215_.Mode(u8_id, drive_mode);
-            switch (drive_mode)
-            {
-                case 0:
-                    st3215_.RegWritePosEx(u8_id, joint_step_map_[joint_names_[i]][0], speed_, acceleration_);
-                    break;
-                default:
-                    RCLCPP_ERROR(this->get_logger(), "Invalid mode. Only mode 0 (closed-loop servo mode) is supported.");
-                    return;
-            }
             stop_ = false;
+            st3215_.Mode(u8_id, 0); // set to mode 0 - closed loop servo mode
+            st3215_.RegWritePosEx(u8_id, joint_step_map_[joint_names_[i]][0], speed_, acceleration_);
             st3215_.RegWriteAction();
         }
 
@@ -97,8 +94,9 @@ private:
     bool stop_;
 
     unordered_map<string, long int> joint_id_map_;
-    unordered_map<string, long int> joint_axis_map_;
+    unordered_map<string, vector<long int>> joint_axis_map_;
     unordered_map<string, vector<long int>> joint_step_map_;
+    unordered_map<string, bool> joint_inv_map_;
 
     void JoyCallback(const sensor_msgs::msg::Joy::SharedPtr msg)
     {
@@ -125,7 +123,25 @@ private:
         for(size_t i = 0; i < joint_names_.size(); ++i)
         {
             string j = joint_names_[i];
-            double axis_val = -1*joy_msg_->axes[joint_axis_map_[j]];
+            double axis_val = 0.0;
+            switch(joint_axis_map_[j].size())
+            {
+                case 1:
+                    axis_val = -1*joy_msg_->axes[joint_axis_map_[j][0]];
+                    break;
+                case 2:
+                    axis_val = -1*(joy_msg_->axes[joint_axis_map_[j][1]] - joy_msg_->axes[joint_axis_map_[j][0]])/2;
+                    break;
+                default:
+                    RCLCPP_ERROR(this->get_logger(), "Invalid axis vector size. The axis vector supports only 1 or 2 values");
+                    break;
+            }
+
+            if(joint_inv_map_[j])
+            {
+                axis_val = -1*axis_val;
+            }
+
             uint8_t u8_id = static_cast<uint8_t>(joint_id_map_[j]);
     
             double joint_pos;
@@ -200,7 +216,7 @@ private:
             diagnostic_msg->status[i].values.push_back(current_msg);
         }
 
-        // update odometry
+        // update odometry + publish TF?
         
 
         // publish joint state message, diagnostics message, odometry
