@@ -1,0 +1,8 @@
+pan_tilt_ctrl_node:
+  ros__parameters:
+    joint_ids: [12, 13]
+    stop_button: 4 # L1
+    speed: 4500 # steps / second
+    acceleration: 255 # 0 - 255
+    usb_port: /dev/ttySERVO
+    baud_rate: 1000000

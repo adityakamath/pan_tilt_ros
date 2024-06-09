@@ -14,10 +14,14 @@ find_package(diagnostic_msgs REQUIRED)
 include_directories(include)
 
 # Add executables
-add_executable(pan_tilt src/pan_tilt_node.cpp)
-ament_target_dependencies(pan_tilt rclcpp sensor_msgs diagnostic_msgs)
-install(TARGETS pan_tilt DESTINATION lib/${PROJECT_NAME})
-target_link_libraries(pan_tilt ${CMAKE_SOURCE_DIR}/include/SCServo_Linux/libSCServo.a)
+add_executable(pan_tilt_cmd src/pan_tilt_cmd_node.cpp)
+ament_target_dependencies(pan_tilt_cmd rclcpp sensor_msgs)
+install(TARGETS pan_tilt_cmd DESTINATION lib/${PROJECT_NAME})
+
+add_executable(pan_tilt_ctrl src/pan_tilt_ctrl_node.cpp)
+ament_target_dependencies(pan_tilt_ctrl rclcpp sensor_msgs diagnostic_msgs)
+install(TARGETS pan_tilt_ctrl DESTINATION lib/${PROJECT_NAME})
+target_link_libraries(pan_tilt_ctrl ${CMAKE_SOURCE_DIR}/include/SCServo_Linux/libSCServo.a)
 
 # ROS config files
 install(DIRECTORY
