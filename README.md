@@ -5,25 +5,30 @@ The mechanism currently holds a [Luxonis OAK-D](https://shop.luxonis.com/product
 
 ## Implementation details
 
-* ```pan_tilt```: This executable is generated using the ```pan_tilt_node.cpp``` source file and subscribes to [Joy messages]((https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Joy.html)) - more specifically two axes for pan and tilt and one button for an emergency stop - to control the pan-tilt mechanism. When the emergency stop button is pressed, the torque is disabled on both motors, allowing the user to move the motors by hand. When the button is pressed again, the motors return to the position specified by the pan and tilt axes - which can be defined in the configuration file. In this case, the pan motion uses the L2 and R2 axes for left and right motion, and the tilt motion uses the Up and Down D-Pad buttons, which is represented as an axis going from +1 to -1 in the joystick mapping. The configuration allows up to 2 axes per joint, which are then mixed in the source code. This node uses the [SCServo_Linux library](https://github.com/adityakamath/SCServo_Linux) to drive the motors in the closed-loop servo mode. Additionally, this node also publishes [JointState](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) and [DiagnosticArray](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) messages (PWM, motion - true/false, temperature, voltage and current) for each motor.
-* ```pan_tilt_launch.py```: This is the launch file that launches ```pan_tilt``` and loads its parameters using the ```config/config.yaml``` file.
+* ```pan_tilt_cmd```: This executable is generated using the ```pan_tilt_cmd_node.cpp``` source file and converts [Joy](https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Joy.html) messages to [JointState](https://docs.ros.org/en/noetic/api/sensor_msgs/html/msg/JointState.html) messages using up to two joystick axes each for the pan and tilt movements. In this case, the pan motion uses the L2 and R2 controls for left and right motion and the tilt motion is controlled using the Up/Down buttons on the D-Pad. The configuration allows up to 2 axes per joint, which are then mixed in the source code. 
+* ```pan_tilt_ctrl```: This executable is generated using the ```pan_tilt_ctrl_node.cpp``` source file and subscribes to JointState messages which is used to control the motors, and Joy messages to determine the status of the emergency stop. When the emergency stop button is pressed, the torque is disabled on both motors, allowing the user to move the motors by hand. When the button is pressed again, the motors return to the position specified by the pan and tilt axes - which can be defined in the configuration file. This node uses the [SCServo_Linux library](https://github.com/adityakamath/SCServo_Linux) to drive the motors in the closed-loop servo mode. Additionally, this node also publishes measured JointState values and [DiagnosticArray](https://docs.ros2.org/foxy/api/diagnostic_msgs/msg/DiagnosticArray.html) messages (PWM, motion - true/false, temperature, voltage and current) for each motor.
+* ```pan_tilt_launch.py```: This is the launch file that launches ```pan_tilt_cmd``` and ```pan_tilt_ctrl``` nodes, and loads their respective parameters using the ```config/cmd_config.yaml``` and ```config/ctrl_config.yaml``` files.
 
 ## Parameters
-The following parameters and their default values are defined in the ```pan_tilt``` node. In this package, the default values are overwritten by the ```config/config.yaml``` file.
+The following parameters and their default values are defined in the ```pan_tilt_cmd``` node. In this package, the default values are overwritten by the ```config/cmd_config.yaml``` file.
 
 * ```joint_names```: Joint names for the pan and tilt joints (Default: ```[joint_pan, joint_tilt]```)
-* ```joint_ids```: Motor IDs for each joint (Default: ```[1, 2]```)
 * ```joint_inv```: Invert joint direction (Default: ```[false, false]```)
 * ```joy_axes0```: Joystick axes mapping for index 0 of ```joint_names``` (Default: ```[2, 5]```)
 * ```joy_axes1```: Joystick axes mapping for index 1 of ```joint_names``` (Default: ```[7]```)
-* ```stop_button```: Button mapping for the emergency stop functionality (Default: ```4```)
 * ```mid_pos```: Middle (origin) step values for the pan and tilt motors (Default: ```[2048, 2048]```)
 * ```min_pos```: Lower limit step values for the pan and tilt motors (Default: ```[1600, 1600]```)
 * ```max_pos```: Upper limit step values for the pan and tilt motors (Default: ```[2816, 2816]```)
+
+The following parameters and their default values are defined in the ```pan_tilt_ctrl``` node. In this package, the default values are overwritten by the ```config/ctrl_config.yaml``` file.
+
+* ```joint_ids```: Motor IDs for each joint (Default: ```[1, 2]```)
+* ```stop_button```: Button mapping for the emergency stop functionality (Default: ```4```)
 * ```speed```: Speed of the motors in steps per second ranging from -4500 to 4500 (```Default: 4500```)
 * ```acceleration```: Acceleration of the motors ranging from 0 to 255 (Default: ```255```)
 * ```usb_port```: USB port name (Default: ```/dev/ttyACM0```)
 * ```baud_rate```: Baud rate of the motor driver (Default: ```1000000```)
+
 
 ## How to use
 
