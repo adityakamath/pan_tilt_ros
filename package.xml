@@ -9,13 +9,20 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
+  <exec_depend>xacro</exec_depend>
+
   <depend>rclcpp</depend>
   <depend>sensor_msgs</depend>
   <depend>diagnostic_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>visualization_msgs</depend>
+
+  <depend>robot_state_publisher</depend>
+  <depend>joint_state_publisher</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-
+  
   <export>
     <build_type>ament_cmake</build_type>
   </export>

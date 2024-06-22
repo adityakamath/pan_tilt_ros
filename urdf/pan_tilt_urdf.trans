@@ -1,0 +1,26 @@
+<?xml version="1.0" ?>
+<robot name="pan_tilt" xmlns:xacro="http://www.ros.org/wiki/xacro" >
+
+<transmission name="tilt_joint_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="tilt_joint">
+    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="tilt_motor">
+    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+<transmission name="pan_joint_trans">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="pan_joint">
+    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="pan_motor">
+    <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+</robot>
