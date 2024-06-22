@@ -1,57 +1,179 @@
-<?xml version="1.0" encoding="utf-8"?>
-<robot name="omni_common" xmlns:xacro="http://ros.org/wiki/xacro">
-<!-- All values below are based on the CAD model (Fusion 360) -->
+<?xml version="1.0" ?>
+<robot name="pan_tilt" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:property name="pi_by_two" value="1.5707963" />
-<xacro:property name="pi_by_three" value="1.0471975"/>
+<xacro:include filename="$(find pan_tilt_ros)/urdf/materials.xacro" />
+<xacro:include filename="$(find pan_tilt_ros)/urdf/pan_tilt_urdf.common" />
+<xacro:include filename="$(find pan_tilt_ros)/urdf/pan_tilt_urdf.trans" />
+<xacro:include filename="$(find pan_tilt_ros)/urdf/pan_tilt_urdf.gazebo" />
 
-<xacro:property name="st3215_torque" value="2.0"/> <!-- approximation of 20 Kgcm to Nm at 8V (rated 30 Kgcm at 12V) -->
-<xacro:property name="st3215_maxvel" value="7.0"/> <!-- approximation of 4500 steps/second; 4096 steps = 1 rotation -->
+<link name="base_link">
+  <visual>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/base_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/base_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+  </collision>
+</link>
 
-<xacro:property name="base_mass" value="2.0" /> <!-- Guesstimate, needs to be measured -->
-<xacro:property name="base_height" value="0.1651" />
-<xacro:property name="base_radius" value="0.105" /> <!-- Distance from the motor shaft to the vertical axis -->
+<link name="base_link_inertial">
+  <inertial>
+    <origin xyz="-0.0015531314926290208 -0.006917643689614827 0.01296710005093539" rpy="0 0 0"/>
+    <mass value="0.08629878221299303"/> <!-- y = 6.8392, x = 1.55..-->
+    <inertia ixx="9e-06" iyy="1e-05" izz="9e-06" ixy="-0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+</link>
 
-<xacro:property name="imu_offset_z" value="0.063003" />
+<link name="tilt_motor">
+  <inertial>
+    <!-- origin xyz="0.016329668153777396 -0.004542288424019495 0.01025020002429897" rpy="0 0 0"/ -->
+    <mass value="0.05372359693747839"/>
+    <inertia ixx="1.2e-05" iyy="7e-06" izz="1.3e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.017719 -0.005007 -0.0272" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/tilt_motor.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.017719 -0.005007 -0.0272" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/tilt_motor.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+  </collision>
+</link>
 
-<xacro:property name="laser_mass" value="0.12" />
-<xacro:property name="laser_length" value="0.038" />
-<xacro:property name="laser_width" value="0.0381" />
-<xacro:property name="laser_height" value="0.033" />
+<link name="pan_tilt_link">
+  <inertial>
+    <!-- origin xyz="-0.013649125671909021 -7.296148707217065e-07 0.019463753088211883" rpy="0 0 0"/ -->
+    <mass value="0.05018544007475792"/>
+    <inertia ixx="1.3e-05" iyy="2.4e-05" izz="1.5e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="-0.012681 -0.013307 -0.037451" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/pan_tilt_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="-0.012681 -0.013307 -0.037451" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/pan_tilt_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+  </collision>
+</link>
 
-<xacro:property name="wheel_radius" value="0.029" />
-<xacro:property name="wheel_mass" value="0.075" /> <!-- Guesstimate, needs to be measured -->
-<xacro:property name="wheel_thickness" value="0.026" />
+<link name="pan_motor">
+  <inertial>
+    <!-- origin xyz="4.332570443822941e-07 -0.012842310722113068 0.0173701073619867" rpy="0 0 0"/ -->
+    <mass value="0.05372359236261105"/>
+    <inertia ixx="1.3e-05" iyy="7e-06" izz="1.2e-05" ixy="0.0" iyz="-0.0" ixz="-0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.001444 -0.013306 -0.073751" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/pan_motor.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.001444 -0.013306 -0.073751" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/pan_motor.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+  </collision>
+</link>
 
-<xacro:property name="base_center_offset_z" value="0.0164" />
-<xacro:property name="footprint_base_offset_z" value="-0.085597" /> <!-- CAD offset, Actual offset ~= -0.083597 -->
-<xacro:property name="base_laser_offset_x" value="0.034435" />
-<xacro:property name="base_laser_offset_z" value="0.076503" />
-<xacro:property name="laser_frame_offset_z" value="0.0255" />
+<link name="camera_link">
+  <inertial>
+    <!-- origin xyz="0.00705968500450624 -0.04297866937829162 -0.013250710871012955" rpy="0 0 0"/ -->
+    <mass value="0.4069750331377844"/>
+    <inertia ixx="0.00017" iyy="0.000299" izz="0.000309" ixy="2.8e-05" iyz="1.2e-05" ixz="-3e-06"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.011694 -0.005005 -0.10745" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.011694 -0.005005 -0.10745" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+  </collision>
+</link>
 
-<xacro:property name="joint_f_offset_x" value="0.10683" />
-<xacro:property name="joint_lr_offset_x" value="-0.053415" />
-<xacro:property name="joint_lr_offset_y" value="0.092518" />
-<xacro:property name="joint_offset_z" value="-0.056597" />
+<link name="oakd">
+  <inertial>
+    <!-- origin xyz="-5.307190548554767e-07 -5.488642980319702e-06 1.1787927783890595e-07" rpy="0 0 0"/ -->
+    <mass value="6.165375582666816e-06"/>
+    <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+  <visual>
+    <origin xyz="0.00237 0.059998 -0.105099" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+    <material name="silver"/>
+  </visual>
+  <collision>
+    <origin xyz="0.00237 0.059998 -0.105099" rpy="0 0 0"/>
+    <geometry>
+      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
+    </geometry>
+  </collision>
+</link>
 
-<xacro:macro name="cylinder_inertia" params="m r h">
-  <inertia  ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
-            iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
-            izz="${m*r*r/2}" />
-</xacro:macro>
 
-<xacro:macro name="box_inertia" params="m x y z">
-  <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
-            iyy="${m*(x*x+z*z)/12}" iyz = "0"
-            izz="${m*(x*x+z*z)/12}" />
-</xacro:macro>
+<joint name="base_inertial_fixed" type="fixed">
+  <parent link="base_link"/>
+  <child link="base_link_inertial"/>
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+</joint>
 
-<xacro:macro name="sphere_inertia" params="m r">
-  <inertia  ixx="${2*m*r*r/5}" ixy = "0" ixz = "0"
-            iyy="${2*m*r*r/5}" iyz = "0"
-            izz="${2*m*r*r/5}" />
-</xacro:macro>
+<joint name="tilt_to_base" type="fixed">
+  <parent link="base_link"/>
+  <child link="tilt_motor"/>
+  <origin xyz="-0.017719 0.005007 0.0272" rpy="0 0 0"/>
+</joint>
 
-<!-- color codes from https://gist.github.com/naoki-mizuno/5e63a13597d5c5fe817c1600b829595e -->
+<joint name="tilt_joint" type="revolute">
+  <parent link="tilt_motor"/>
+  <child link="pan_tilt_link"/>
+  <origin xyz="0.0304 0.0083 0.010251" rpy="0 0 0"/>
+  <axis xyz="1.0 0.0 0.0"/>
+  <limit lower="${-pi_by_two}" upper="${pi_by_two}" effort="${st3215_effort}" velocity="${st3215_maxvel}"/>
+</joint>
+
+<joint name="pan_joint" type="revolute">
+  <parent link="pan_tilt_link"/>
+  <child link="pan_motor"/>
+  <axis xyz="0.0 0.0 1.0"/>
+  <origin xyz="-0.014125 -1e-06 0.0363" rpy="0 0 0"/>
+  <limit lower="${-pi_by_two}" upper="${pi_by_two}" effort="${st3215_effort}" velocity="${st3215_maxvel}"/>
+</joint>
+
+<joint name="camera_mount_to_motor" type="fixed">
+  <parent link="pan_motor"/>
+  <child link="camera_link"/>
+  <origin xyz="-0.01025 -0.008301 0.033699" rpy="0 0 0"/>
+</joint>
+
+<joint name="camera_to_mount" type="fixed">
+  <parent link="camera_link"/>
+  <child link="oakd"/>
+  <origin xyz="0.009324 -0.065003 -0.002351" rpy="0 0 0"/>
+</joint>
 
 </robot>

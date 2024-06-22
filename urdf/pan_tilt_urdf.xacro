@@ -7,164 +7,173 @@
 <xacro:include filename="$(find pan_tilt_ros)/urdf/pan_tilt_urdf.gazebo" />
 
 <link name="base_link">
-  <inertial>
-    <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
-    <!--origin xyz="-0.0015531314926290208 -0.006917643689614827 0.01296710005093539" rpy="0 0 0"/ -->
-    <mass value="0.08629878221299303"/> <!-- y = 6.8392, x = 1.55..-->
-    <inertia ixx="9e-06" iyy="1e-05" izz="9e-06" ixy="-0.0" iyz="0.0" ixz="0.0"/>
-  </inertial>
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/base_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/base_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
   </collision>
 </link>
 
+<link name="base_link_inertial">
+  <inertial>
+    <origin xyz="-0.0015531314926290208 -0.006917643689614827 0.01296710005093539" rpy="0 0 0"/>
+    <mass value="0.08629878221299303"/> <!-- y = 6.8392, x = 1.55..-->
+    <inertia ixx="9e-06" iyy="1e-05" izz="9e-06" ixy="-0.0" iyz="0.0" ixz="0.0"/>
+  </inertial>
+</link>
+
 <link name="tilt_motor">
   <inertial>
-    <origin xyz="0.016329668153777396 -0.004542288424019495 0.01025020002429897" rpy="0 0 0"/>
+    <!-- origin xyz="0.016329668153777396 -0.004542288424019495 0.01025020002429897" rpy="0 0 0"/ -->
     <mass value="0.05372359693747839"/>
     <inertia ixx="1.2e-05" iyy="7e-06" izz="1.3e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
   </inertial>
   <visual>
     <origin xyz="0.017719 -0.005007 -0.0272" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.017719 -0.005007 -0.0272" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
   </collision>
 </link>
 
 <link name="pan_tilt_link">
   <inertial>
-    <origin xyz="-0.013649125671909021 -7.296148707217065e-07 0.019463753088211883" rpy="0 0 0"/>
+    <!-- origin xyz="-0.013649125671909021 -7.296148707217065e-07 0.019463753088211883" rpy="0 0 0"/ -->
     <mass value="0.05018544007475792"/>
     <inertia ixx="1.3e-05" iyy="2.4e-05" izz="1.5e-05" ixy="0.0" iyz="0.0" ixz="0.0"/>
   </inertial>
   <visual>
     <origin xyz="-0.012681 -0.013307 -0.037451" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/pan_tilt_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/pan_tilt_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="-0.012681 -0.013307 -0.037451" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/pan_tilt_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/pan_tilt_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
   </collision>
 </link>
 
 <link name="pan_motor">
   <inertial>
-    <origin xyz="4.332570443822941e-07 -0.012842310722113068 0.0173701073619867" rpy="0 0 0"/>
+    <!-- origin xyz="4.332570443822941e-07 -0.012842310722113068 0.0173701073619867" rpy="0 0 0"/ -->
     <mass value="0.05372359236261105"/>
     <inertia ixx="1.3e-05" iyy="7e-06" izz="1.2e-05" ixy="0.0" iyz="-0.0" ixz="-0.0"/>
   </inertial>
   <visual>
     <origin xyz="0.001444 -0.013306 -0.073751" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.001444 -0.013306 -0.073751" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/st3215.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
   </collision>
 </link>
 
 <link name="camera_link">
   <inertial>
-    <origin xyz="0.00705968500450624 -0.04297866937829162 -0.013250710871012955" rpy="0 0 0"/>
+    <!-- origin xyz="0.00705968500450624 -0.04297866937829162 -0.013250710871012955" rpy="0 0 0"/ -->
     <mass value="0.4069750331377844"/>
     <inertia ixx="0.00017" iyy="0.000299" izz="0.000309" ixy="2.8e-05" iyz="1.2e-05" ixz="-3e-06"/>
   </inertial>
   <visual>
     <origin xyz="0.011694 -0.005005 -0.10745" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.011694 -0.005005 -0.10745" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
   </collision>
 </link>
 
 <link name="oakd">
   <inertial>
-    <origin xyz="-5.307190548554767e-07 -5.488642980319702e-06 1.1787927783890595e-07" rpy="0 0 0"/>
+    <!-- origin xyz="-5.307190548554767e-07 -5.488642980319702e-06 1.1787927783890595e-07" rpy="0 0 0"/ -->
     <mass value="6.165375582666816e-06"/>
     <inertia ixx="0.0" iyy="0.0" izz="0.0" ixy="0.0" iyz="0.0" ixz="0.0"/>
   </inertial>
   <visual>
     <origin xyz="0.00237 0.059998 -0.105099" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
     <material name="silver"/>
   </visual>
   <collision>
     <origin xyz="0.00237 0.059998 -0.105099" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="${stl_scale} ${stl_scale} ${stl_scale}"/>
     </geometry>
   </collision>
 </link>
 
+
+<joint name="base_inertial_fixed" type="fixed">
+  <parent link="base_link"/>
+  <child link="base_link_inertial"/>
+  <origin xyz="0 0 0" rpy="0 0 0"/>
+</joint>
+
 <joint name="tilt_to_base" type="fixed">
-  <origin xyz="-0.017719 0.005007 0.0272" rpy="0 0 0"/>
   <parent link="base_link"/>
   <child link="tilt_motor"/>
+  <origin xyz="-0.017719 0.005007 0.0272" rpy="0 0 0"/>
 </joint>
 
 <joint name="tilt_joint" type="revolute">
-  <origin xyz="0.0304 0.0083 0.010251" rpy="0 0 0"/>
   <parent link="tilt_motor"/>
   <child link="pan_tilt_link"/>
+  <origin xyz="0.0304 0.0083 0.010251" rpy="0 0 0"/>
   <axis xyz="1.0 0.0 0.0"/>
   <limit lower="${-pi_by_two}" upper="${pi_by_two}" effort="${st3215_effort}" velocity="${st3215_maxvel}"/>
 </joint>
 
 <joint name="pan_joint" type="revolute">
-  <origin xyz="-0.014125 -1e-06 0.0363" rpy="0 0 0"/>
   <parent link="pan_tilt_link"/>
   <child link="pan_motor"/>
   <axis xyz="0.0 0.0 1.0"/>
+  <origin xyz="-0.014125 -1e-06 0.0363" rpy="0 0 0"/>
   <limit lower="${-pi_by_two}" upper="${pi_by_two}" effort="${st3215_effort}" velocity="${st3215_maxvel}"/>
 </joint>
 
 <joint name="camera_mount_to_motor" type="fixed">
-  <origin xyz="-0.01025 -0.008301 0.033699" rpy="0 0 0"/>
   <parent link="pan_motor"/>
   <child link="camera_link"/>
+  <origin xyz="-0.01025 -0.008301 0.033699" rpy="0 0 0"/>
 </joint>
 
 <joint name="camera_to_mount" type="fixed">
-  <origin xyz="0.009324 -0.065003 -0.002351" rpy="0 0 0"/>
   <parent link="camera_link"/>
   <child link="oakd"/>
+  <origin xyz="0.009324 -0.065003 -0.002351" rpy="0 0 0"/>
 </joint>
 
 </robot>
