@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <robot name="pan_tilt" xmlns:xacro="http://www.ros.org/wiki/xacro" >
 
-<xacro:property name="body_color" value="Gazebo/Silver" />
+<xacro:property name="body_color" value="Gazebo/Black" />
 
 <gazebo>
   <plugin name="control" filename="libgazebo_ros_control.so"/>
@@ -21,7 +21,7 @@
   <selfCollide>true</selfCollide>
 </gazebo>
 
-<gazebo reference="pan_tilt_link">
+<gazebo reference="pan_tilt_bracket">
   <material>${body_color}</material>
   <mu1>0.2</mu1>
   <mu2>0.2</mu2>
