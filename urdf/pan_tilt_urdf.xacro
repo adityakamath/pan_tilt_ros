@@ -92,7 +92,7 @@
   </collision>
 </link>
 
-<link name="camera_link">
+<link name="payload_link">
   <inertial>
     <origin xyz="-0.004991360468491857 -0.011542339627033346 0.004227044433613547" rpy="0 0 0"/>
     <mass value="0.09449139072993021"/>
@@ -101,35 +101,14 @@
   <visual>
     <origin xyz="-0.014736 -0.00042 -0.08975" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/payload_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="matte_black"/>
   </visual>
   <collision>
     <origin xyz="-0.014736 -0.00042 -0.08975" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/camera_link.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-  </collision>
-</link>
-
-<link name="oakd">
-  <inertial>
-    <origin xyz="0.01740685213679074 0.0005740020595517798 0.007939642786094867" rpy="0 0 0"/>
-    <mass value="0.3193880841082503"/>
-    <inertia ixx="0.000275" iyy="9.8e-05" izz="0.000232" ixy="-1e-06" iyz="-0.0" ixz="-5e-06"/>
-  </inertial>
-  <visual>
-    <origin xyz="-0.019836 8e-05 -0.08971" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="0.001 0.001 0.001"/>
-    </geometry>
-    <material name="matte_black"/>
-  </visual>
-  <collision>
-    <origin xyz="-0.019836 8e-05 -0.08971" rpy="0 0 0"/>
-    <geometry>
-      <mesh filename="package://pan_tilt_ros/meshes/oakd.stl" scale="0.001 0.001 0.001"/>
+      <mesh filename="package://pan_tilt_ros/meshes/payload_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
   </collision>
 </link>
@@ -160,16 +139,10 @@
   <axis xyz="0.0 0.0 1.0"/>
 </joint>
 
-<joint name="pan_mount_fixed" type="fixed">
+<joint name="payload_mount_fixed" type="fixed">
   <origin xyz="0.035056 0.0 0.0157" rpy="0 0 0"/>
   <parent link="pan_motor"/>
-  <child link="camera_link"/>
-</joint>
-
-<joint name="mount_camera_fixed" type="fixed">
-  <origin xyz="0.0051 -0.0005 -4e-05" rpy="0 0 0"/>
-  <parent link="camera_link"/>
-  <child link="oakd"/>
+  <child link="payload_link"/>
 </joint>
 
 </robot>
