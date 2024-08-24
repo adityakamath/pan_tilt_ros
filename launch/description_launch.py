@@ -26,12 +26,6 @@ def generate_launch_description():
         value_type=str)
 
     return LaunchDescription([ 
-
-        DeclareLaunchArgument(
-            name='js_ext',
-            default_value='False',
-            description='Enable Joint States from external nodes (like the micro-ROS node). If False, enable Joint States from the Joint State Publisher'),
-
         DeclareLaunchArgument(
             name='js_topic',
             default_value='joint_states',
