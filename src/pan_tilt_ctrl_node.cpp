@@ -184,10 +184,7 @@ private:
                 diagnostic_msg->status[i].values.push_back(current_msg);
             }
 
-            // update odometry + publish TF?
-        
-
-            // publish joint state message, diagnostics message, odometry
+            // publish joint state message, diagnostics message
             joint_state_publisher_->publish(*joint_state_msg);
             diagnostics_publisher_->publish(*diagnostic_msg);
         }
