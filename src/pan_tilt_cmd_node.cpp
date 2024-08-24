@@ -11,7 +11,7 @@ class PanTiltCmdNode : public rclcpp::Node
 public:
     PanTiltCmdNode() : Node("pan_tilt_cmd_node")
     {
-        joint_names_  = this->declare_parameter<vector<string>>("joint_names", {"joint_pan", "joint_tilt"}); 
+        joint_names_  = this->declare_parameter<vector<string>>("joint_names", {"pan_joint", "tilt_joint"}); 
 
         vector<long int> mid_step  = this->declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
         vector<long int> min_step  = this->declare_parameter<vector<long int>>("min_pos", {1600, 1600});
@@ -107,7 +107,8 @@ private:
 
             // populate joint state message
             joint_cmd_msg->name.push_back(joint_names_[i]);
-            joint_cmd_msg->position.push_back(joint_pos*2*M_PI/4096.0);
+            joint_cmd_msg->position.push_back(M_PI - joint_pos*2*M_PI/4096.0);
+
         }
 
         // publish joint command message

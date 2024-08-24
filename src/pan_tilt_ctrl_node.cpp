@@ -123,7 +123,7 @@ private:
                 if (!stop_)
                 {
                     st3215_.RegWritePosEx(u8_id, 
-                                          static_cast<int>(round(joint_cmd_msg_->position[i]*(4096.0/(2*M_PI)))), 
+                                          static_cast<int>(round((-1*joint_cmd_msg_->position[i] + M_PI)*(4096.0/(2*M_PI)))), 
                                           speed_, 
                                           acceleration_);
                     st3215_.RegWriteAction();
@@ -139,7 +139,7 @@ private:
             
                 if ( st3215_.FeedBack(u8_id) != -1 )
                 {
-                    position = 2*M_PI - st3215_.ReadPos(u8_id)*2*M_PI/4096.0; // 1 step=2*PI/4096.0 rad, 
+                    position = M_PI - st3215_.ReadPos(u8_id)*2*M_PI/4096.0; // 1 step=2*PI/4096.0 rad, 
                     speed = -1 * st3215_.ReadSpeed(u8_id)*2*M_PI/4096.0;  // 1 steps/s=2*PI/4096.0 rads/sec
                     pwm = -1 * st3215_.ReadLoad(u8_id)/10.0; // 0-1000 : 0-100%
                     move = st3215_.ReadMove(u8_id);

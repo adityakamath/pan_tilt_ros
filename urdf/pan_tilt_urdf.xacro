@@ -99,14 +99,14 @@
     <inertia ixx="2.1e-05" iyy="1.8e-05" izz="2.1e-05" ixy="-6e-06" iyz="0.0" ixz="0.0"/>
   </inertial>
   <visual>
-    <origin xyz="-0.014736 -0.00042 -0.08975" rpy="0 0 0"/>
+    <origin xyz="-0.0001099 0.0164388 -0.0939786" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://pan_tilt_ros/meshes/payload_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
     <material name="matte_black"/>
   </visual>
   <collision>
-    <origin xyz="-0.014736 -0.00042 -0.08975" rpy="0 0 0"/>
+    <origin xyz="-0.0001099 0.0164388 -0.0939786" rpy="0 0 0"/>
     <geometry>
       <mesh filename="package://pan_tilt_ros/meshes/payload_link.stl" scale="0.001 0.001 0.001"/>
     </geometry>
@@ -140,7 +140,7 @@
 </joint>
 
 <joint name="payload_mount_fixed" type="fixed">
-  <origin xyz="0.035056 0.0 0.0157" rpy="0 0 0"/>
+  <origin xyz="0.0204299 -0.0168588 0.0199286" rpy="0 0 0"/>
   <parent link="pan_motor"/>
   <child link="payload_link"/>
 </joint>
