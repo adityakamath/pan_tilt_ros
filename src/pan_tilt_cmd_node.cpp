@@ -24,7 +24,7 @@ public:
 
         if (joint_names_.size() != 2 || min_step.size() != 2 || max_step.size() != 2 || mid_step.size() != 2)
         {
-            RCLCPP_ERROR(this->get_logger(), "Invalid parameters. 2 joint names, IDs and angles are required. Currently only two motor (pan-tilt) configurations are supported");
+            RCLCPP_ERROR(this->get_logger(), "Invalid parameters - only 2 joint mechanisms are supported");
             return;
         }
 

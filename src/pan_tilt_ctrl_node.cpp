@@ -24,7 +24,7 @@ public:
 
         if (joint_ids_.size() != 2)
         {
-            RCLCPP_ERROR(this->get_logger(), "Invalid parameters. 2 joint names, IDs and angles are required. Currently only two motor (pan-tilt) configurations are supported");
+            RCLCPP_ERROR(this->get_logger(), "Invalid parameter - only 2 joint IDs are supported");
             return;
         }
 
@@ -101,8 +101,18 @@ private:
         auto diagnostic_msg = std::make_shared<diagnostic_msgs::msg::DiagnosticArray>();
         
         joint_state_msg->header.stamp = this->now();
-        
-        if(joint_cmd_msg_ && joint_cmd_msg_->name.size() == joint_ids_.size())
+
+        if (!joint_cmd_msg_)
+        {
+            RCLCPP_WARN(this->get_logger(), "No joint command received");
+            return;
+        }
+        else if (joint_cmd_msg_->name.size() != joint_ids_.size())
+        {
+            RCLCPP_WARN(this->get_logger(), "Invalid joint command received");
+            return;
+        }
+        else
         {
             for(size_t i = 0; i < joint_cmd_msg_->name.size(); ++i)
             {
@@ -180,10 +190,6 @@ private:
             // publish joint state message, diagnostics message, odometry
             joint_state_publisher_->publish(*joint_state_msg);
             diagnostics_publisher_->publish(*diagnostic_msg);
-        }
-        else
-        {
-            RCLCPP_ERROR(this->get_logger(), "Configuration parameters mismatch: Joint command messages and Joint ID parameters should be of the same size.");
         }
     }
 };
