@@ -1,4 +1,6 @@
 # pan_tilt_ros
+![](https://img.shields.io/badge/ROS%202-Humble-blue) ![](https://img.shields.io/badge/ROS%202-Jazzy-blue)
+
 ROS 2 C++ package for controlling a pan-tilt mechanism using [Joy messages](https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Joy.html). The pan-tilt mechanism is built using two [Waveshare ST3215](https://www.waveshare.com/wiki/ST3215_Servo) serial bus servo motors. It is also compatible with the [Feetech STS3215](https://www.feetechrc.com/en/2020-05-13_56655.html) and [Waveshare ST3215-HS](https://www.waveshare.com/st3215-hs-servo-motor.htm) motors. 
 
 The mechanism contains a mounting point to attach any kind of payload. This package is solely for controlling the pan-tilt mechanism and does not contain any nodes for the sensor payload.
