@@ -12,31 +12,27 @@ using namespace std;
 class PanTiltCtrlNode : public rclcpp::Node
 {
 public:
-    PanTiltCtrlNode() : Node("pan_tilt_ctrl_node")
-    {
-        speed_        = this->declare_parameter<int>("speed", 4500); // steps per second
-        acceleration_ = this->declare_parameter<int>("acceleration", 255); // 0 - 255
-        stop_button_  = this->declare_parameter<int>("stop_button", 4); // defaults to SixAxis/SteamDeck:L1
-        joint_ids_    = this->declare_parameter<vector<long int>>("joint_ids", {1, 1});
-        
-        string usb_port = this->declare_parameter<string>("usb_port", "/dev/ttyACM0");
-        int baud_rate   = this->declare_parameter<int>("baud_rate", 1000000); //115200 for sms, 1000000 for sts
+    PanTiltCtrlNode() : Node("pan_tilt_ctrl_node") {
+        speed_        = declare_parameter<int>("speed", 4500); // steps per second
+        acceleration_ = declare_parameter<int>("acceleration", 255); // 0 - 255
+        stop_button_  = declare_parameter<int>("stop_button", 4); // defaults to SixAxis/SteamDeck:L1
+        joint_ids_    = declare_parameter<vector<long int>>("joint_ids", {1, 2});
 
-        if (joint_ids_.size() != 2)
-        {
+        auto usb_port  = declare_parameter<string>("usb_port", "/dev/ttyACM0");
+        auto baud_rate = declare_parameter<int>("baud_rate", 1000000); //115200 for sms, 1000000 for sts
+
+        if (joint_ids_.size() != 2) {
             RCLCPP_ERROR(this->get_logger(), "Invalid parameter - only 2 joint IDs are supported");
             return;
         }
 
-        if(!st3215_.begin(baud_rate, usb_port.c_str()))
-        {
+        if(!st3215_.begin(baud_rate, usb_port.c_str())) {
             stop_ = true;
             RCLCPP_ERROR(this->get_logger(), "Failed to initialize motors");
             return;
         }
 
-        for (size_t i = 0; i < joint_ids_.size(); ++i)
-        {
+        for (size_t i = 0; i < joint_ids_.size(); ++i) {
             stop_ = false;
             st3215_.Mode(joint_ids_[i], 0); // set to mode 0 - closed loop servo mode
         }
@@ -50,19 +46,22 @@ public:
         RCLCPP_INFO(this->get_logger(), "Initialized");
     }
 
-    ~PanTiltCtrlNode()
-    {
-        for (size_t i = 0; i < joint_ids_.size(); ++i)
-        {
+    ~PanTiltCtrlNode() {
+        for (size_t i = 0; i < joint_ids_.size(); ++i) {
             stop_ = true;
             st3215_.EnableTorque(static_cast<uint8_t>(joint_ids_[i]), 0);
         }
         st3215_.end();
         RCLCPP_INFO(this->get_logger(), "Motors Disabled");
     }
+
 private:
     SMS_STS st3215_;
-    
+
+    vector<long int> joint_ids_;
+    int speed_, acceleration_, stop_button_;
+    bool stop_;
+
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_subscriber_;
     rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr joint_cmd_subscriber_;
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_state_publisher_;
@@ -72,73 +71,42 @@ private:
     sensor_msgs::msg::Joy::SharedPtr joy_msg_;
     sensor_msgs::msg::JointState::SharedPtr joint_cmd_msg_;
 
-    vector<long int> joint_ids_;
-    int speed_;
-    int acceleration_;
-    int stop_button_;
-    bool stop_;
-
     unordered_map<string, long int> joint_id_map_;
 
-    void JoyCallback(const sensor_msgs::msg::Joy::SharedPtr msg)
-    {
-        if ( msg->buttons[stop_button_] && !joy_msg_->buttons[stop_button_] )
-        {
-            stop_ = !(stop_);
-        }
-
+    void JoyCallback(const sensor_msgs::msg::Joy::SharedPtr msg) {
+        if (msg->buttons[stop_button_] && !joy_msg_->buttons[stop_button_]) { stop_ = !(stop_); }
         joy_msg_ = msg;
     }
 
-    void JointCmdCallback(const sensor_msgs::msg::JointState::SharedPtr msg)
-    {
-        joint_cmd_msg_ = msg;
-    }
+    void JointCmdCallback(const sensor_msgs::msg::JointState::SharedPtr msg) { joint_cmd_msg_ = msg; }
 
-    void TimerCallback()
-    {
-        auto joint_state_msg = std::make_shared<sensor_msgs::msg::JointState>();
-        auto diagnostic_msg = std::make_shared<diagnostic_msgs::msg::DiagnosticArray>();
-        
-        joint_state_msg->header.stamp = this->now();
-
-        if (!joint_cmd_msg_)
-        {
+    void TimerCallback() {
+        if (!joint_cmd_msg_) {
             RCLCPP_WARN(this->get_logger(), "No joint command received");
             return;
         }
-        else if (joint_cmd_msg_->name.size() != joint_ids_.size())
-        {
+        else if (joint_cmd_msg_->name.size() != joint_ids_.size()) {
             RCLCPP_WARN(this->get_logger(), "Invalid joint command received");
             return;
         }
-        else
-        {
-            for(size_t i = 0; i < joint_cmd_msg_->name.size(); ++i)
-            {
-                string j = joint_cmd_msg_->name[i];
-                uint8_t u8_id = static_cast<uint8_t>(joint_ids_[i]);
+        else {
+            for(size_t i = 0; i < joint_cmd_msg_->name.size(); ++i) {
+                auto j = joint_cmd_msg_->name[i];
+                auto u8_id = static_cast<uint8_t>(joint_ids_[i]);
+                auto joint_pos_cmd = static_cast<int>(round((M_PI - joint_cmd_msg_->position[i]) * 4096.0 / (2 * M_PI)))
 
                 // write to servos
-                if (!stop_)
-                {
-                    st3215_.RegWritePosEx(u8_id, 
-                                          static_cast<int>(round((-1*joint_cmd_msg_->position[i] + M_PI)*(4096.0/(2*M_PI)))), 
-                                          speed_, 
-                                          acceleration_);
+                if (!stop_) {
+                    st3215_.RegWritePosEx(u8_id, joint_pos_cmd, speed_, acceleration_);
                     st3215_.RegWriteAction();
                 }
-                else
-                {
-                    st3215_.EnableTorque(u8_id, 0);
-                }
+                else { st3215_.EnableTorque(u8_id, 0); }
 
                 // read feedback data
                 double position = 0.0, speed = 0.0, pwm = 0.0, temperature = 0.0, voltage = 0.0, current = 0.0;
                 int move = 0;
-            
-                if ( st3215_.FeedBack(u8_id) != -1 )
-                {
+
+                if ( st3215_.FeedBack(u8_id) != -1 ) {
                     position = M_PI - st3215_.ReadPos(u8_id)*2*M_PI/4096.0; // 1 step=2*PI/4096.0 rad, 
                     speed = -1 * st3215_.ReadSpeed(u8_id)*2*M_PI/4096.0;  // 1 steps/s=2*PI/4096.0 rads/sec
                     pwm = -1 * st3215_.ReadLoad(u8_id)/10.0; // 0-1000 : 0-100%
@@ -148,13 +116,17 @@ private:
                     current = st3215_.ReadCurrent(u8_id)*6.5/1000; // 1 : 6.5/1000 A
                 }
 
-                // populate joint state message
+                // create and populate joint state message
+                auto joint_state_msg = std::make_shared<sensor_msgs::msg::JointState>();
+                joint_state_msg->header.stamp = now();
                 joint_state_msg->name.push_back(joint_cmd_msg_->name[i]);
                 joint_state_msg->position.push_back(position);
                 joint_state_msg->velocity.push_back(speed);
                 joint_state_msg->effort.push_back(current);
 
-                // populate diagnostics message
+                // create and populate diagnostics message
+                auto diagnostic_msg = std::make_shared<diagnostic_msgs::msg::DiagnosticArray>();
+                diagnostic_msg->header.stamp = now();
                 diagnostic_msg->status.emplace_back();
                 diagnostic_msg->status[i].name = j;
                 diagnostic_msg->status[i].hardware_id = to_string(u8_id);
@@ -191,8 +163,7 @@ private:
     }
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     rclcpp::init(argc, argv);
     auto node = make_shared<PanTiltCtrlNode>();
     rclcpp::spin(node);

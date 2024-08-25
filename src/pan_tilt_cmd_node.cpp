@@ -1,35 +1,28 @@
-#include <cmath>
-
 #include "rclcpp/rclcpp.hpp"
 #include "sensor_msgs/msg/joy.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 
 using namespace std;
 
-class PanTiltCmdNode : public rclcpp::Node
-{
+class PanTiltCmdNode : public rclcpp::Node {
 public:
-    PanTiltCmdNode() : Node("pan_tilt_cmd_node")
-    {
-        joint_names_  = this->declare_parameter<vector<string>>("joint_names", {"pan_joint", "tilt_joint"}); 
+    PanTiltCmdNode() : Node("pan_tilt_cmd_node") {
+        joint_names_  = declare_parameter<vector<string>>("joint_names", {"pan_joint", "tilt_joint"});
 
-        vector<long int> mid_step  = this->declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
-        vector<long int> min_step  = this->declare_parameter<vector<long int>>("min_pos", {1600, 1600});
-        vector<long int> max_step  = this->declare_parameter<vector<long int>>("max_pos", {2816, 2816});
-        vector<bool> joint_inv     = this->declare_parameter<vector<bool>>("joint_inv", {false, false});
-        
-        vector<long int> joy_axes0 = this->declare_parameter<vector<long int>>("joy_axes0", {2, 5});
-        vector<long int> joy_axes1 = this->declare_parameter<vector<long int>>("joy_axes1", {4});
+        auto mid_step  = declare_parameter<vector<long int>>("mid_pos", {2048, 2048});
+        auto min_step  = declare_parameter<vector<long int>>("min_pos", {1600, 1600});
+        auto max_step  = declare_parameter<vector<long int>>("max_pos", {2816, 2816});
+        auto joint_inv = declare_parameter<vector<bool>>("joint_inv", {false, false});
+        auto joy_axes0 = declare_parameter<vector<long int>>("joy_axes0", {2, 5});
+        auto joy_axes1 = declare_parameter<vector<long int>>("joy_axes1", {7});
         vector<vector<long int>> joy_axes = {joy_axes0, joy_axes1};
 
-        if (joint_names_.size() != 2 || min_step.size() != 2 || max_step.size() != 2 || mid_step.size() != 2)
-        {
+        if (joint_names_.size() != 2 || min_step.size() != 2 || max_step.size() != 2 || mid_step.size() != 2) {
             RCLCPP_ERROR(this->get_logger(), "Invalid parameters - only 2 joint mechanisms are supported");
             return;
         }
 
-        for (size_t i = 0; i < joint_names_.size(); ++i)
-        {
+        for (size_t i = 0; i < joint_names_.size(); ++i) {
             joint_step_map_[joint_names_[i]] = {mid_step[i], min_step[i], max_step[i]};
             joint_axis_map_[joint_names_[i]] = joy_axes[i];
             joint_inv_map_[joint_names_[i]] = joint_inv[i];
@@ -42,12 +35,7 @@ public:
         RCLCPP_INFO(this->get_logger(), "Initialized");
     }
 
-    ~PanTiltCmdNode()
-    {
-    }
-
 private:
-    
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr joy_subscriber_;
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr joint_cmd_publisher_;
     rclcpp::TimerBase::SharedPtr timer_;
@@ -55,33 +43,23 @@ private:
     sensor_msgs::msg::Joy::SharedPtr joy_msg_;
 
     vector<string> joint_names_;
-
-    unordered_map<string, vector<long int>> joint_axis_map_;
-    unordered_map<string, vector<long int>> joint_step_map_;
+    unordered_map<string, vector<long int>> joint_axis_map_, joint_step_map;
     unordered_map<string, bool> joint_inv_map_;
 
-    void JoyCallback(const sensor_msgs::msg::Joy::SharedPtr msg)
-    {
-        joy_msg_ = msg;
-    }
+    void JoyCallback(const sensor_msgs::msg::Joy::SharedPtr msg) { joy_msg_ = msg; }
 
-    void TimerCallback()
-    {
+    void TimerCallback() {
         if (!joy_msg_) {
             RCLCPP_WARN(this->get_logger(), "No joystick message received yet.");
             return;
         }
-        
+
         auto joint_cmd_msg = std::make_shared<sensor_msgs::msg::JointState>();
-        
         joint_cmd_msg->header.stamp = this->now();
-        
-        for(size_t i = 0; i < joint_names_.size(); ++i)
-        {
-            string j = joint_names_[i];
+
+        for(const auto& j : joint_names_) {
             double axis_val = 0.0;
-            switch(joint_axis_map_[j].size())
-            {
+            switch(joint_axis_map_[j].size()) {
                 case 1:
                     axis_val = -1*joy_msg_->axes[joint_axis_map_[j][0]];
                     break;
@@ -93,11 +71,8 @@ private:
                     break;
             }
 
-            if(joint_inv_map_[j])
-            {
-                axis_val = -1*axis_val;
-            }
-    
+            if(joint_inv_map_[j]) { axis_val = -1*axis_val; }
+
             double joint_pos;
             if (axis_val < 0) {
                 joint_pos = joint_step_map_[j][1] + (axis_val + 1.0) * (joint_step_map_[j][0] - joint_step_map_[j][1]);
@@ -106,7 +81,7 @@ private:
             }
 
             // populate joint state message
-            joint_cmd_msg->name.push_back(joint_names_[i]);
+            joint_cmd_msg->name.push_back(j);
             joint_cmd_msg->position.push_back(M_PI - joint_pos*2*M_PI/4096.0);
 
         }
@@ -116,8 +91,7 @@ private:
     }
 };
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     rclcpp::init(argc, argv);
     auto node = make_shared<PanTiltCmdNode>();
     rclcpp::spin(node);
