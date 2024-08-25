@@ -1,5 +1,5 @@
 # pan_tilt_ros
-![](https://img.shields.io/badge/ROS%202%20Humble-Ubuntu%2022.04-green) ![](https://img.shields.io/badge/ROS%202%20Jazzy-Ubuntu%2024.04-blue) ![GitHub License](https://img.shields.io/github/license/adityakamath/pan_tilt_ros)
+![](https://img.shields.io/badge/ROS%202%20Humble-Ubuntu%2022.04-blue) ![](https://img.shields.io/badge/ROS%202%20Jazzy-Ubuntu%2024.04-blue) ![GitHub License](https://img.shields.io/github/license/adityakamath/pan_tilt_ros)
  ![X (formerly Twitter) Follow](https://img.shields.io/twitter/follow/kamathsblog)
 
 
