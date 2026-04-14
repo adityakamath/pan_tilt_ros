@@ -9,7 +9,7 @@ ROS 2 C++ package for controlling a pan-tilt mechanism using [Joy messages](http
   <img width="300" alt="Pan-Tilt Mechanism" src="https://github.com/user-attachments/assets/a72a7bc5-c7e5-4957-a25e-71fa5ab6baa9">
 </div>
 
-The mechanism contains a bracket for attaching any payload using a custom mount (Fusion360 file available in the ```meshes``` directory). A standard tripod mount is also provided. **Note:** This package is solely for controlling the pan-tilt mechanism and does not contain nodes for attached payloads. 
+The mechanism contains a bracket for attaching any payload using a custom mount. A standard tripod mount is also provided. **Note:** This package is solely for controlling the pan-tilt mechanism and does not contain nodes for attached payloads. 
 
 ## Implementation details
 
